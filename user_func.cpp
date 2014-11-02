@@ -5,43 +5,15 @@
 
 using namespace std;
 double sum(QVector<double> v, int el, int size);
-QVector<double> simple_moving_averge(int n, QVector<double> v);
 QVector<double> createX(int n,int start=0);
-QVector<double> createSample(int n);
-QVector<double> simple_moving_averge_v2(int n, QVector<double> v);
+QVector<double> createSample(int n, double expect, double variation);
 
-QVector<double> simple_moving_averge(int n, QVector<double> v)
-{
-    QVector<double> res;
-    double x = 0;
-    for(int i = 0; i <= v.size()-n; i++)
-    {
-        x = sum(v,i,n)/n;
-        res.push_back(x);
-    }
-    return res;
-}
-
-
-double sum(QVector<double> v, int el, int size)
-{
-    if(size<0||(size+el)>v.size())
-    {
-    }
-    auto end = v.begin()+el+size;
-    double sum = 0;
-    for(auto it = v.begin()+el;it < end; it++)
-    {
-        sum += *it;
-    }
-    return sum;
-}
-
-QVector<double> createSample(int n)
+//Создание вектора наблюдений
+QVector<double> createSample(int n, double expect, double variation)
 {
    unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
    std::default_random_engine generator(seed1);
-   std::normal_distribution<double> distribution(5.0,2.0);
+   std::normal_distribution<double> distribution(expect,variation);
     QVector<double> sample;
     for(int i = 0; i < n ; i++)
     {
@@ -50,26 +22,7 @@ QVector<double> createSample(int n)
     return sample;
 }
 
-QVector<double> simple_moving_averge_v2(int n, QVector<double> v)
-{
-    QVector<double> res;
-    int j = (n-1)/2;
-    double sum = 0;
-    for(int i = 0; i<n; i++)
-    {
-        sum += v.at(i);
-    }
-    double x1 = sum/n;
-    res.push_back(x1);
-    double tmp = 0;
-    for(int i = 1; i<v.size()-j-1;i++)
-    {
-        tmp = res.at(i-1) + ((v.at(i+j)-v.at(i-j+1))/n);
-        res.push_back(tmp);
-    }
-    return res;
-}
-
+//Подсчет простого скользящего среднего.
 QVector<double> simple_moving_averge_v3(int n, QVector<double> v)
 {
     QVector<double> res;
@@ -86,6 +39,8 @@ QVector<double> simple_moving_averge_v3(int n, QVector<double> v)
     }
     return res;
 }
+
+//Подсчет взвешенного скользящего среднего.
 QVector<double> weighted_moving_average(QVector<double> v)
 {
     QVector<double> res;
